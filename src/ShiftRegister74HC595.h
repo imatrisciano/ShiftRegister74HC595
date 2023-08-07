@@ -20,7 +20,7 @@ public:
 #if !defined(SHIFT_REGISTER_USES_SPI_WITH_FREQUENCY)
     ShiftRegister74HC595(const uint8_t serialDataPin, const uint8_t clockPin, const uint8_t latchPin);
 #else
-    ShiftRegister74HC595(const uint8_t latchPin);
+    ShiftRegister74HC595(const uint8_t latchPin, SPIClass* SPIPeripheral = SPI);
 #endif
     
     void setAll(const uint8_t * digitalValues);
@@ -37,6 +37,10 @@ public:
     void order(uint8_t o);
 
 private:
+    #ifdef SHIFT_REGISTER_USES_SPI_WITH_FREQUENCY
+    SPIClass* _SPIPeripheral;
+    #endif
+
     #ifdef __AVR__
     uint8_t bo = MSBFIRST;
     #else

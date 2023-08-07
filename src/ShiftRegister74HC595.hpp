@@ -41,9 +41,10 @@ ShiftRegister74HC595<Size>::ShiftRegister74HC595(const uint8_t serialDataPin, co
 // ShiftRegister74HC595 constructor
 // Size is the number of shiftregisters stacked in serial
 template<uint8_t Size>
-ShiftRegister74HC595<Size>::ShiftRegister74HC595(const uint8_t latchPin)
+ShiftRegister74HC595<Size>::ShiftRegister74HC595(const uint8_t latchPin,SPIClass* SPIPeripheral)
 { 
     _latchPin = latchPin;
+    _SPIPeripheral = SPIPeripheral;
 
 #ifdef __AVR__
     _pinMask = digitalPinToBitMask(latchPin);
@@ -61,8 +62,8 @@ ShiftRegister74HC595<Size>::ShiftRegister74HC595(const uint8_t latchPin)
     // allocates the specified number of bytes and initializes them to zero
     memset(_digitalValues, 0, Size * sizeof(uint8_t));
 
-    SPI.begin();
-    SPI.beginTransaction(SPISettings(SHIFT_REGISTER_USES_SPI_WITH_FREQUENCY, bo, SPI_MODE0));
+    _SPIPeripheral->begin();
+    _SPIPeripheral->beginTransaction(SPISettings(SHIFT_REGISTER_USES_SPI_WITH_FREQUENCY, bo, SPI_MODE0));
 
     updateRegisters();       // reset shift register
 }
@@ -131,7 +132,7 @@ template<uint8_t Size>
 void ShiftRegister74HC595<Size>::updateRegisters()
 {
     for (int i = Size - 1; i >= 0; i--) {
-        SPI.transfer(_digitalValues[i]);
+        _SPIPeripheral->transfer(_digitalValues[i]);
     }
     #ifdef __AVR__
     *_port |= _pinMask;
