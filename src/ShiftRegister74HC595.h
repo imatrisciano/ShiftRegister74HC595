@@ -20,7 +20,7 @@ public:
 #if !defined(SHIFT_REGISTER_USES_SPI_WITH_FREQUENCY)
     ShiftRegister74HC595(const uint8_t serialDataPin, const uint8_t clockPin, const uint8_t latchPin);
 #else
-    ShiftRegister74HC595(const uint8_t latchPin, SPIClass* SPIPeripheral = SPI);
+    ShiftRegister74HC595(const uint8_t latchPin, SPIClass* SPIPeripheral = &SPI);
 #endif
     
     void setAll(const uint8_t * digitalValues);
